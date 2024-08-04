@@ -1,35 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import { ThemeContext } from "./context/ThemeContext";
+import useTheme from "./hooks/useTheme";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = ({ children }) => {
+  const { theme, themeIcon, handleThemeChange } = useTheme();
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <ThemeContext.Provider
+      value={{
+        theme,
+        icon: themeIcon,
+        change: handleThemeChange,
+      }}
+    >
+      <div className={`min-h-screen flex flex-col ${theme}`}>
+        <Header />
+        <main className="m-6 flex-grow flex justify-center *:flex-1">{children}</main>
+        <Footer />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    </ThemeContext.Provider>
+  );
+};
 
-export default App
+export default App;
