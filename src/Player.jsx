@@ -5,12 +5,16 @@ import axios from "axios";
 import { QRCode } from "react-qrcode-logo";
 import { ThemeContext } from "./context/ThemeContext";
 import { handleShare } from "./components/Header";
+import Favicon from "./components/Faviction";
+import replace from "./script/replace";
 
 const Player = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const src = urlParams.get("link");
   const name = urlParams.get("name");
   const text = urlParams.get("text");
+  const from = urlParams.get("from");
+  const site = urlParams.get("site");
 
   const [play, setPlay] = useState(false);
   const [trackInfo, setTrackInfo] = useState({});
@@ -116,18 +120,31 @@ const Player = () => {
         className={"rounded-lg player_" + theme}
       />
 
-      {text && (
-        <p className="text-gray-700 dark:text-gray-300" title="Description">
-          <span className="font-bold">Description:</span>
-          <br />
-          {text.split("\\n").map((line, index) => (
-            <React.Fragment key={index}>
-              {line}
-              <br />
-            </React.Fragment>
-          ))}
-        </p>
-      )}
+      <div className="w-full flex *:flex-1">
+        {text && (
+          <p className="text-gray-700 dark:text-gray-300" title="Description">
+            <span className="font-bold">Description:</span>
+            <br />
+            {replace(text)}
+          </p>
+        )}
+
+        {site && (
+          <p>
+            From:
+            <br />
+            <a
+              href={site}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 underline"
+            >
+              <Favicon domain={site} size={32} className="inline-block mr-1" />
+              {replace(from) ?? replace(site)}
+            </a>
+          </p>
+        )}
+      </div>
 
       <div ref={qrRef} className="flex">
         <QRCode
