@@ -7,6 +7,7 @@ import { ThemeContext } from "./context/ThemeContext";
 import { handleShare } from "./components/Header";
 import Favicon from "./components/Faviction";
 import replace from "./script/replace";
+import { FaDownload } from "react-icons/fa";
 
 const Player = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -29,7 +30,7 @@ const Player = () => {
       canvas.toBlob((blob) => {
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `${trackInfo?.trackName || "Unknown Track"} - ${
+        link.download = `${trackInfo?.trackName || "Unknown Track"}-${
           trackInfo.artistName || "Unknown Artist"
         } [${location.host}].png`;
         link.click();
@@ -108,6 +109,16 @@ const Player = () => {
         >
           {trackInfo.artistName || "Unknown Artist"} -{" "}
           {trackInfo.collectionName || "Unknown Collection"}
+          <a
+            className="mx-2 inline-block"
+            title="Download music"
+            href={src}
+            download={`${trackInfo?.trackName || "Unknown Track"}-${
+              trackInfo.artistName || "Unknown Artist"
+            } [${location.host}].mp3`}
+          >
+            <FaDownload />
+          </a>
         </h2>
       </div>
 
