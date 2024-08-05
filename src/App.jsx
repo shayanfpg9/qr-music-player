@@ -21,7 +21,7 @@ const App = ({ children }) => {
       <div className={`min-h-screen flex flex-col ${theme}`}>
         <TrackContext.Provider value={trackInfo}>
           <Header />
-          <main className="m-6 flex-grow flex justify-center *:flex-1">
+          <main className="m-6 flex-grow flex justify-center items-center *:flex-1">
             {children}
           </main>
           <Footer />

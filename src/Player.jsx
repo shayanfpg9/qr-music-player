@@ -88,7 +88,7 @@ const Player = () => {
     <section
       className={`p-4 max-w-xl mx-auto bg-slate-50 dark:bg-gray-900 rounded-xl shadow-md space-y-4 ${theme}`}
     >
-      <div className="space-y-4 py-2 flex justify-center flex-wrap *:w-full text-center">
+      <div className="space-y-2 py-2 flex justify-center flex-wrap *:w-full text-center">
         {trackInfo.artworkUrl100 && (
           <img
             src={trackInfo.artworkUrl100.replaceAll("100", "200")}
@@ -103,13 +103,13 @@ const Player = () => {
         )}
 
         <h1
-          className="text-3xl font-bold text-gray-900 dark:text-white"
+          className="text-3xl font-bold pt-2 text-gray-900 dark:text-white"
           title="Track Name"
         >
           {trackInfo.trackName || "Unknown Track"}
         </h1>
         <h2
-          className="text-md text-gray-500 dark:text-gray-400"
+          className="text-gray-500 dark:text-gray-400"
           title="Artist Name"
         >
           {trackInfo.artistName || "Unknown Artist"} -{" "}
@@ -143,11 +143,12 @@ const Player = () => {
 
       <div className="w-full flex *:flex-1">
         {text && (
-          <p className="text-gray-700 dark:text-gray-300" title="Description">
-            <span className="font-bold">Description:</span>
-            <br />
-            {replace(text)}
-          </p>
+          <div>
+            <span className="font-bold text-xl">Description:</span>
+            <p className="text-gray-700 dark:text-gray-300 text-center text-lg" title="Description">
+              {replace(text)}
+            </p>
+          </div>
         )}
 
         {site && (
@@ -167,8 +168,8 @@ const Player = () => {
         )}
       </div>
 
-      <div ref={qrRef} className="flex">
-        <div className="bg-gray-100 dark:bg-[#1a202c] rounded-md">
+      <div ref={qrRef} className="flex max-md:flex-col max-md:space-y-4">
+        <div className="bg-gray-100 dark:bg-[#1a202c] rounded-md flex max-md:justify-center">
           <QRCode
             value={window.location.href}
             logoImage={logoBase64}
@@ -185,7 +186,7 @@ const Player = () => {
           />
         </div>
 
-        <div className="flex flex-wrap *:w-full space-y-4 px-2 *:text-xl *:text-white *:px-4 *:py-2 *:rounded">
+        <div className="flex flex-wrap *:w-full space-y-4 md:px-2 *:text-xl *:text-white *:px-4 *:py-2 *:rounded">
           <DownloadButton
             className={
               "bg-red-500 hover:bg-red-600 rounded flex items-center justify-center " +
