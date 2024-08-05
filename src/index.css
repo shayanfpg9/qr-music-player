@@ -1,9 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  @apply max-h-[100vh] md:overflow-hidden;
+  @apply max-h-[100vh] md:overflow-hidden font-archivo;
 }
 
 body.dark {
@@ -39,4 +41,17 @@ body.light footer {
 
 #react-qrcode-logo {
   @apply rounded-lg;
+}
+
+form label {
+  @apply block text-gray-700 dark:text-gray-300 font-semibold md:text-xl;
+}
+
+form input,
+form textarea {
+  @apply mt-1 p-2 border rounded-md md:min-h-14 md:text-lg w-full text-gray-900;
+}
+
+form button {
+  @apply text-white px-4 py-4 rounded-md text-lg;
 }
