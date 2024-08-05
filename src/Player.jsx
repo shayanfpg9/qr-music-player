@@ -8,8 +8,13 @@ import { handleShare } from "./components/Header";
 import Favicon from "./components/Faviction";
 import replace from "./script/replace";
 import { FaDownload } from "react-icons/fa";
+import DownloadButton from "./components/DownloadBtn";
+import { TbLoader } from "react-icons/tb";
+import { TrackContext } from "./context/TrackContext";
 
 const Player = () => {
+  const { setInfo, downloading, handleDownload } = useContext(TrackContext);
+
   const urlParams = new URLSearchParams(window.location.search);
   const src = urlParams.get("link");
   const name = urlParams.get("name");
@@ -45,7 +50,7 @@ const Player = () => {
         .then((response) => {
           if (response.data.results.length > 0) {
             setTrackInfo(response.data.results[0]);
-            window.track = { ...response.data.results[0], text, src };
+            setInfo({ ...response.data.results[0], text, src });
           }
         })
         .catch((error) => console.error(error));
@@ -109,16 +114,21 @@ const Player = () => {
         >
           {trackInfo.artistName || "Unknown Artist"} -{" "}
           {trackInfo.collectionName || "Unknown Collection"}
-          <a
+          <DownloadButton
             className="mx-2 inline-block"
             title="Download music"
-            href={src}
-            download={`${trackInfo?.trackName || "Unknown Track"}-${
+            src={src}
+            onClick={handleDownload}
+            filename={`${trackInfo?.trackName || "Unknown Track"}-${
               trackInfo.artistName || "Unknown Artist"
             } [${location.host}].mp3`}
           >
-            <FaDownload />
-          </a>
+            {downloading ? (
+              <TbLoader className="mr-2 animate-spin-slow" />
+            ) : (
+              <FaDownload className="mr-2" />
+            )}
+          </DownloadButton>
         </h2>
       </div>
 
@@ -158,25 +168,42 @@ const Player = () => {
       </div>
 
       <div ref={qrRef} className="flex">
-        <QRCode
-          value={window.location.href}
-          logoImage={logoBase64}
-          logoWidth={75}
-          logoHeight={75}
-          logoOpacity={1}
-          removeQrCodeBehindLogo={true}
-          qrStyle="dots"
-          eyeRadius={10}
-          size={200}
-          title="QR Code"
-          bgColor={theme === "dark" ? "#1a202c" : "#ffffff"}
-          fgColor={theme === "dark" ? "#ffffff" : "#000000"}
-        />
+        <div className="bg-gray-100 dark:bg-[#1a202c] rounded-md">
+          <QRCode
+            value={window.location.href}
+            logoImage={logoBase64}
+            logoWidth={75}
+            logoHeight={75}
+            logoOpacity={1}
+            removeQrCodeBehindLogo={true}
+            qrStyle="dots"
+            eyeRadius={10}
+            size={200}
+            title="QR Code"
+            bgColor="transparent"
+            fgColor={theme === "dark" ? "#ffffff" : "#000000"}
+          />
+        </div>
 
-        <div className="flex flex-wrap *:w-full space-y-4 px-2">
+        <div className="flex flex-wrap *:w-full space-y-4 px-2 *:text-xl *:text-white *:px-4 *:py-2 *:rounded">
+          <DownloadButton
+            className={
+              "bg-red-500 hover:bg-red-600 rounded flex items-center justify-center " +
+              (downloading && "animate-pulse")
+            }
+            title="Download music"
+            onClick={handleDownload}
+            src={src}
+            filename={`${trackInfo?.trackName || "Unknown Track"}-${
+              trackInfo.artistName || "Unknown Artist"
+            } [${location.host}].mp3`}
+          >
+            Download music
+          </DownloadButton>
+
           <button
             onClick={downloadQRCode}
-            className="bg-green-500 hover:bg-green-600 text-xl text-white px-4 py-2 rounded"
+            className="bg-green-500 hover:bg-green-600"
             title="Download QR Code"
           >
             Download QR Code
@@ -184,7 +211,7 @@ const Player = () => {
 
           <button
             onClick={handleShare}
-            className="bg-blue-500 hover:bg-blue-600 text-xl text-white px-4 py-2 rounded"
+            className="bg-blue-500 hover:bg-blue-600"
             title="Share this page"
           >
             Share this page
