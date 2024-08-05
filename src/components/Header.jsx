@@ -7,6 +7,7 @@ import { TbLoader } from "react-icons/tb";
 import { FaDownload } from "react-icons/fa";
 import { TrackContext } from "../context/TrackContext";
 import handleShare from "../script/handleshare";
+import { IoHome } from "react-icons/io5";
 
 const Header = () => {
   const { theme, icon: ThemeIcon, change: setTheme } = useContext(ThemeContext);
@@ -23,6 +24,10 @@ const Header = () => {
           {ThemeIcon}
         </button>
 
+        <Link title="Home" className="inline-block" to="/">
+          <IoHome />
+        </Link>
+
         {trackInfo && (
           <button onClick={handleShare} title="Share">
             <BsFillShareFill />
@@ -33,7 +38,7 @@ const Header = () => {
           <DownloadButton
             className="mx-2 inline-block"
             title="Download music"
-            src={trackInfo?.src}
+            src={trackInfo?.src || ""}
             onClick={handleDownload}
             filename={`${trackInfo?.trackName || "Unknown Track"}-${
               trackInfo.artistName || "Unknown Artist"
