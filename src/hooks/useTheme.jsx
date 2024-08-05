@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import * as bs from "react-icons/bs";
 
 const useTheme = () => {
@@ -12,7 +12,7 @@ const useTheme = () => {
     setTheme(themeName);
   };
 
-  const handleThemeChange = (newTheme) => {
+  const handleThemeChange = useCallback((newTheme) => {
     let finalTheme = newTheme;
 
     if (newTheme === "system") {
@@ -33,11 +33,11 @@ const useTheme = () => {
       default:
         setThemeIcon(<bs.BsFillDropletFill />);
     }
-  };
+  }, []);
 
   useEffect(() => {
     handleThemeChange(localStorage.getItem("theme") || "system");
-  }, []);
+  }, [handleThemeChange]);
 
   return { theme, themeIcon, handleThemeChange };
 };

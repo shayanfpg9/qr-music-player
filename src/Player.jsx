@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import axios from "axios";
 import { QRCode } from "react-qrcode-logo";
 import { ThemeContext } from "./context/ThemeContext";
-import { handleShare } from "./components/Header";
+import handleShare from "./script/handleshare";
 import Favicon from "./components/Faviction";
 import replace from "./script/replace";
 import { FaDownload } from "react-icons/fa";
@@ -55,7 +55,7 @@ const Player = () => {
         })
         .catch((error) => console.error(error));
     }
-  }, [name]);
+  }, [name, setInfo, src, text]);
 
   // Function to fetch image as base64
   const getBase64Image = (url, callback) => {
@@ -108,10 +108,7 @@ const Player = () => {
         >
           {trackInfo.trackName || "Unknown Track"}
         </h1>
-        <h2
-          className="text-gray-500 dark:text-gray-400"
-          title="Artist Name"
-        >
+        <h2 className="text-gray-500 dark:text-gray-400" title="Artist Name">
           {trackInfo.artistName || "Unknown Artist"} -{" "}
           {trackInfo.collectionName || "Unknown Collection"}
           <DownloadButton
@@ -145,7 +142,10 @@ const Player = () => {
         {text && (
           <div>
             <span className="font-bold text-xl">Description:</span>
-            <p className="text-gray-700 dark:text-gray-300 text-center text-lg" title="Description">
+            <p
+              className="text-gray-700 dark:text-gray-300 text-center text-lg"
+              title="Description"
+            >
               {replace(text)}
             </p>
           </div>
