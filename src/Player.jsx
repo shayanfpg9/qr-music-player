@@ -11,13 +11,9 @@ import { FaArrowLeft, FaArrowRight, FaDownload } from "react-icons/fa";
 import DownloadButton from "./components/DownloadBtn";
 import { TbLoader } from "react-icons/tb";
 import { TrackContext } from "./context/TrackContext";
-import {
-  Link,
-  useLocation,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
+import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import useDocumentMeta from "./hooks/useDocumentMeta";
+import ErrorElement from "./Error";
 
 const proxy = "https://corsproxy.io/?";
 
@@ -73,7 +69,7 @@ const Player = () => {
             name
           )}&limit=${index}`,
           {
-            timeout: 10000,
+            timeout: 5000,
           }
         )
         .then((response) => {
@@ -100,6 +96,8 @@ const Player = () => {
               }`,
               faviconUrl: track.artworkUrl60,
             });
+          } else {
+            setError(true);
           }
         })
         .catch(() => {
@@ -146,25 +144,8 @@ const Player = () => {
           className="animate-spin-slow text-gray-900 dark:text-white"
         />
       ) : error ? (
-        <div className="flex justify-center flex-wrap *:w-full *:p-4 *:text-center space-y-4">
-          <span className="text-4xl text-gray-900 dark:text-white">
-            Error 404{" "}
-          </span>
-          <Link
-            title="Home"
-            to="/"
-            className="bg-blue-500 hover:bg-blue-600 text-2xl rounded-lg"
-          >
-            Home
-          </Link>
-          <button
-            title="Refresh"
-            onClick={() => location.reload()}
-            className="bg-yellow-500 hover:bg-yellow-600 text-2xl rounded-lg"
-          >
-            Refresh
-          </button>
-          {index && (
+        <ErrorElement>
+          {serachParams.get("page") && (
             <button
               title="Previous page"
               onClick={() => {
@@ -176,26 +157,20 @@ const Player = () => {
               Previous page
             </button>
           )}
-        </div>
+        </ErrorElement>
       ) : (
         <>
           <div className="space-y-2 py-2 flex justify-center flex-wrap *:w-full text-center relative">
-            <nav
-              className={`w-full absolute top-0 h-10 flex justify-${
-                index === 1 ? "end" : "between"
-              }`}
-            >
-              {index !== 1 && (
-                <button
-                  title={`Temp number ${index - 1}`}
-                  onClick={() => {
-                    serachParams.set("page", index - 1);
-                    setSeachParams(serachParams);
-                  }}
-                >
-                  <FaArrowLeft />
-                </button>
-              )}
+            <nav className={`w-full absolute top-0 h-10 flex justify-between`}>
+              <button
+                title={`Temp number ${index - 1}`}
+                onClick={() => {
+                  index !== 1 && serachParams.set("page", index - 1);
+                  index !== 1 && setSeachParams(serachParams);
+                }}
+              >
+                {index !== 1 && <FaArrowLeft />}
+              </button>
 
               <button
                 title={`Temp number ${index + 1}`}
