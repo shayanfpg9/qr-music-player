@@ -61,7 +61,7 @@ const Player = () => {
 
     setTrackInfo({});
     setInfo({});
-  }, [location]);
+  }, [location]); // eslint-disable-line
 
   useEffect(() => {
     if (name) {
@@ -96,7 +96,7 @@ const Player = () => {
           setError(true);
         });
     }
-  }, [name, setInfo, src, text]);
+  }, [name, setInfo, src, text, index]);
 
   // Function to fetch image as base64
   const getBase64Image = (url, callback) => {
@@ -123,7 +123,7 @@ const Player = () => {
         setLogoBase64
       );
     }
-  }, [trackInfo?.artworkUrl100]);
+  }, [trackInfo?.artworkUrl100, error]);
 
   return (
     <section

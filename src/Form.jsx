@@ -83,7 +83,6 @@ const Form = () => {
         <div className="flex space-x-4 justify-center *:flex-1 ">
           <button
             type="submit"
-            onClick={() => handleSubmit("create")}
             className="bg-green-500 hover:bg-green-600"
           >
             Create

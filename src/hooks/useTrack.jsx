@@ -5,22 +5,27 @@ const useTrack = () => {
   const [trackInfo, setInfo] = useState({});
   const [downloading, setDownloading] = useState(false);
   const location = useLocation();
+
+  const handleDownload = (status) => {
+    if (status === "start") setDownloading(true);
+    if (status === "done") setDownloading(false);
+  };
+
+  const setTrackInfo = (data) => {
+    setInfo(data);
+    window.track = data;
+  };
+
   const response = {
     trackInfo,
     downloading,
-    setInfo: (data) => {
-      setInfo(data);
-      window.track = data;
-    },
-    handleDownload: (status) => {
-      if (status === "start") setDownloading(true);
-      if (status === "done") setDownloading(false);
-    },
+    setInfo: setTrackInfo,
+    handleDownload,
   };
 
   useEffect(() => {
-    response.setInfo({});
-    response.handleDownload("done")
+    setTrackInfo({});
+    handleDownload("done");
   }, [location]);
 
   return response;
