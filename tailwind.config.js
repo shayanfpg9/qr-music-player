@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        archivo: '"Archivo", sans-serif',
+        archivo: '"Archivo", vazirmatn, sans-serif',
       },
       animation: {
         "spin-slow": "spin 3s linear infinite",
