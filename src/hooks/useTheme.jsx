@@ -23,11 +23,15 @@ const useTheme = () => {
 
     applyTheme(finalTheme);
 
+    const metaTheme = document.querySelector("meta[name='theme-color']");
+
     switch (finalTheme) {
       case "dark":
+        metaTheme.setAttribute("content", "#1A202C");
         setThemeIcon(<bs.BsFillMoonStarsFill />);
         break;
       case "light":
+        metaTheme.setAttribute("content", "#F1F5F9");
         setThemeIcon(<bs.BsFillSunFill />);
         break;
       default:

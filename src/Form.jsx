@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
 import { ThemeContext } from "./context/ThemeContext";
+import useDocumentMeta from "./hooks/useDocumentMeta";
 
 const Form = () => {
   const [name, setName] = useState("");
@@ -8,6 +9,13 @@ const Form = () => {
   const [title, setTitle] = useState("");
   const [fileUrl, setFileUrl] = useState("");
   const { theme } = useContext(ThemeContext);
+  const changeMeta = useDocumentMeta();
+
+  changeMeta({
+    title: `Music player`,
+    description: `QR Music player by @shayanfpg9`,
+    faviconUrl: `${location.origin}/logo.svg`,
+  });
 
   return (
     <div
@@ -81,10 +89,7 @@ const Form = () => {
         </div>
 
         <div className="flex space-x-4 justify-center *:flex-1 ">
-          <button
-            type="submit"
-            className="bg-green-500 hover:bg-green-600"
-          >
+          <button type="submit" className="bg-green-500 hover:bg-green-600">
             Create
           </button>
         </div>

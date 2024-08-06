@@ -17,6 +17,7 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
+import useDocumentMeta from "./hooks/useDocumentMeta";
 
 const proxy = "https://corsproxy.io/?";
 
@@ -24,6 +25,7 @@ const Player = () => {
   const { setInfo, downloading, handleDownload } = useContext(TrackContext);
   const [serachParams, setSeachParams] = useSearchParams();
   const location = useLocation();
+  const changeMeta = useDocumentMeta();
 
   const src = proxy + encodeURI(serachParams.get("src"));
   const name = useParams().name.replaceAll("+", " ");
@@ -81,14 +83,23 @@ const Player = () => {
             response.data.results.length > 0 &&
             response.data.results[index - 1]
           ) {
+            const track = response.data.results[index - 1];
+
             if (response.data.results.length < index) setError(true);
+            if (!track.trackName) setError(true);
 
-            setTrackInfo(response.data.results[index - 1]);
-            setInfo({ ...response.data.results[index - 1], text, src });
+            setTrackInfo(track);
+            setInfo({ ...track, text, src });
 
-            if (!response.data.results[0].trackName) setError(true);
-          } else {
-            setError(true);
+            changeMeta({
+              title: `Music player | ${track.trackName} - ${track.artistName}`,
+              description: `${track.trackName} by ${
+                track.artistName
+              } in QR Music player. for "${text.replaceAll("\\n", " ")}" from ${
+                from || "Anonymous"
+              }`,
+              faviconUrl: track.artworkUrl60,
+            });
           }
         })
         .catch(() => {
@@ -96,7 +107,7 @@ const Player = () => {
           setError(true);
         });
     }
-  }, [name, setInfo, src, text, index]);
+  }, [name, src, text, index]);
 
   // Function to fetch image as base64
   const getBase64Image = (url, callback) => {
