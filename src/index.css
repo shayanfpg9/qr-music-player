@@ -58,3 +58,12 @@ form button {
 nav button svg {
   @apply size-10 text-gray-500;
 }
+
+#error {
+  @apply flex justify-center flex-wrap *:w-full *:h-20 p-4 text-center space-y-4;
+}
+
+#error button,
+#error a {
+  @apply text-2xl rounded-lg px-4 py-2 text-white flex justify-center items-center;
+}

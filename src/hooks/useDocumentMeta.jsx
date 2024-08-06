@@ -1,3 +1,5 @@
+import { base } from "../../config.json";
+
 const useDocumentMeta = () => {
   const change = ({ title, description, faviconUrl }) => {
     if (title) {
@@ -15,6 +17,8 @@ const useDocumentMeta = () => {
         document.head.appendChild(metaDescription);
       }
     }
+
+    faviconUrl = faviconUrl.replaceAll("%%", location.origin + base);
 
     if (faviconUrl) {
       let link = document.querySelector("link[rel~='icon']");

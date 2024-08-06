@@ -14,6 +14,13 @@ const Header = () => {
   const { trackInfo, handleDownload, downloading } = useContext(TrackContext);
   const location = useLocation();
   const [player, setPlayer] = useState(location.pathname.match("player"));
+  const validate = () => {
+    try {
+      return new URL(trackInfo.src) && trackInfo.trackName;
+    } catch (e) {
+      return false;
+    }
+  };
 
   useEffect(() => {
     setPlayer(location.pathname.match("player"));
@@ -30,19 +37,19 @@ const Header = () => {
           {ThemeIcon}
         </button>
 
-        {player && (
+        {player && validate() && (
           <Link title="Home" className="inline-block" to="/">
             <IoHome />
           </Link>
         )}
 
-        {player && (
+        {player && validate() && (
           <button onClick={handleShare} title="Share">
             <BsFillShareFill />
           </button>
         )}
 
-        {player && (
+        {player && validate() && (
           <DownloadButton
             className="mx-2 inline-block"
             title="Download music"

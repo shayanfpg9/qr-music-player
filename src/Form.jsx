@@ -16,7 +16,7 @@ const Form = () => {
   changeMeta({
     title: `Music player`,
     description: `QR Music player by @shayanfpg9`,
-    faviconUrl: `${location.origin}/logo.svg`,
+    faviconUrl: `%%/logo.svg`,
   });
 
   const handleSubmit = (ev) => {

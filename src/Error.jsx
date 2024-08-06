@@ -2,6 +2,7 @@ import { useContext } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { ThemeContext } from "./context/ThemeContext";
+import useDocumentMeta from "./hooks/useDocumentMeta";
 
 /**
  * ErrorElement component to display an error page with a customizable error code, and options to navigate home or refresh.
@@ -14,37 +15,39 @@ import { ThemeContext } from "./context/ThemeContext";
  */
 const ErrorElement = ({ children, code = 404, bg = false }) => {
   const { theme } = useContext(ThemeContext);
+  const changeMeta = useDocumentMeta();
+
+  changeMeta({
+    title: `Music player | Error ${code}`,
+    description: `QR Music player by @shayanfpg9`,
+    faviconUrl: `%%/logo.svg`,
+  });
 
   return (
-    <section
+    <div
+      id="error"
       className={
         bg
           ? `p-4 max-w-xl mx-auto bg-slate-50 dark:bg-gray-900 rounded-xl shadow-md space-y-4 ${theme}`
           : ""
       }
     >
-      <div className="flex justify-center flex-wrap w-full p-4 text-center space-y-4">
-        <span className="text-4xl text-gray-900 dark:text-white">
-          Error {code}
-        </span>
-        <Link
-          title="Home"
-          to="/"
-          className="bg-blue-500 hover:bg-blue-600 text-2xl rounded-lg px-4 py-2 text-white"
-        >
-          Home
-        </Link>
-        <button
-          title="Refresh"
-          onClick={() => window.location.reload()}
-          className="bg-yellow-500 hover:bg-yellow-600 text-2xl rounded-lg px-4 py-2 text-white"
-        >
-          Refresh
-        </button>
+      <span className="text-4xl text-gray-900 dark:text-white flex items-center justify-center">
+        Error {code}
+      </span>
+      <Link title="Home" to="/" className="bg-blue-500 hover:bg-blue-600">
+        Home
+      </Link>
+      <button
+        title="Refresh"
+        onClick={() => window.location.reload()}
+        className="bg-yellow-500 hover:bg-yellow-600 "
+      >
+        Refresh
+      </button>
 
-        {children}
-      </div>
-    </section>
+      {children}
+    </div>
   );
 };
 
