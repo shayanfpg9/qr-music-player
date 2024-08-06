@@ -48,7 +48,7 @@ form label {
 
 form input,
 form textarea {
-  @apply mt-1 p-2 border rounded-md md:min-h-14 md:text-lg w-full text-gray-900 font-archivo;
+  @apply mt-1 p-2 border rounded-md md:min-h-12 md:text-lg w-full text-gray-900 font-archivo;
 }
 
 form button {

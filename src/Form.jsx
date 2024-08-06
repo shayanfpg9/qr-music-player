@@ -43,7 +43,9 @@ const Form = () => {
     <div
       className={`p-4 min-w-[50vw] mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md ${theme}`}
     >
-      <h1 className="text-3xl font-bold mb-4">Submit Your Information</h1>
+      <h1 className="text-3xl font-bold mb-4 text-center">
+        Submit Your Music Information
+      </h1>
 
       <form className="space-y-4">
         <div>
