@@ -8,6 +8,7 @@ import { FaDownload } from "react-icons/fa";
 import { TrackContext } from "../context/TrackContext";
 import handleShare from "../script/handleshare";
 import { IoHome } from "react-icons/io5";
+import { LuRefreshCw } from "react-icons/lu";
 
 const Header = () => {
   const { theme, icon: ThemeIcon, change: setTheme } = useContext(ThemeContext);
@@ -32,9 +33,13 @@ const Header = () => {
         <h1>Music Player</h1>
       </Link>
 
-      <div className="space-x-4">
+      <div className="space-x-4" title="Change theme">
         <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
           {ThemeIcon}
+        </button>
+
+        <button onClick={() => window.location.reload()} title="Reload">
+          <LuRefreshCw />
         </button>
 
         {player && validate() && (
