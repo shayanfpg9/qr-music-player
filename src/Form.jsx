@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { ThemeContext } from "./context/ThemeContext";
 import useDocumentMeta from "./hooks/useDocumentMeta";
+import { useNavigate } from "react-router-dom";
 
 const Form = () => {
   const [name, setName] = useState("");
@@ -9,6 +10,7 @@ const Form = () => {
   const [title, setTitle] = useState("");
   const [fileUrl, setFileUrl] = useState("");
   const { theme } = useContext(ThemeContext);
+  const navigate = useNavigate();
   const changeMeta = useDocumentMeta();
 
   changeMeta({
@@ -17,13 +19,28 @@ const Form = () => {
     faviconUrl: `${location.origin}/logo.svg`,
   });
 
+  const handleSubmit = (ev) => {
+    ev.preventDefault();
+
+    if (name && fileUrl) {
+      const queryParams = new URLSearchParams({
+        text,
+        site: fromSite,
+        from: title,
+        src: fileUrl,
+      });
+
+      navigate(`/player/${name}/?${queryParams.toString()}`);
+    }
+  };
+
   return (
     <div
       className={`p-4 min-w-[50vw] mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md ${theme}`}
     >
       <h1 className="text-3xl font-bold mb-4">Submit Your Information</h1>
 
-      <form method="get" action="/player" className="space-y-4">
+      <form className="space-y-4">
         <div>
           <label>Name</label>
           <input
@@ -89,7 +106,11 @@ const Form = () => {
         </div>
 
         <div className="flex space-x-4 justify-center *:flex-1 ">
-          <button type="submit" className="bg-green-500 hover:bg-green-600">
+          <button
+            onClick={(ev) => handleSubmit(ev)}
+            type="submit"
+            className="bg-green-500 hover:bg-green-600"
+          >
             Create
           </button>
         </div>
