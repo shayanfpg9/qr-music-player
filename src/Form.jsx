@@ -9,6 +9,7 @@ const Form = () => {
   const [fromSite, setFromSite] = useState("");
   const [title, setTitle] = useState("");
   const [fileUrl, setFileUrl] = useState("");
+  const [fileError, setFileError] = useState(false);
   const { theme } = useContext(ThemeContext);
   const navigate = useNavigate();
   const changeMeta = useDocumentMeta();
@@ -22,15 +23,19 @@ const Form = () => {
   const handleSubmit = (ev) => {
     ev.preventDefault();
 
-    if (name && fileUrl) {
-      const queryParams = new URLSearchParams({
-        text,
-        site: fromSite,
-        from: title,
-        src: fileUrl,
-      });
+    try {
+      if (name && new URL(fileUrl)) {
+        const queryParams = new URLSearchParams({
+          text,
+          site: fromSite,
+          from: title,
+          src: fileUrl,
+        });
 
-      navigate(`/player/${name}/?${queryParams.toString()}`);
+        navigate(`/player/${name}/?${queryParams.toString()}`);
+      }
+    } catch (e) {
+      setFileError(true);
     }
   };
 
@@ -95,7 +100,14 @@ const Form = () => {
         <hr />
 
         <div>
-          <label>File URL</label>
+          <label>
+            File URL{" "}
+            {fileError && (
+              <span className="text-sm animate-pulse text-red-500">
+                (Input must be a URL)
+              </span>
+            )}
+          </label>
           <input
             type="text"
             value={fileUrl}

@@ -1,3 +1,4 @@
+import axios from "axios";
 import PropTypes from "prop-types";
 
 /**
@@ -24,7 +25,7 @@ const DownloadButton = ({
     try {
       if (typeof onClick === "function") onClick("start");
 
-      const response = await fetch(src, {
+      const response = await axios.get(src, {
         headers: {
           "Access-Control-Allow-Origin": "*",
         },
@@ -48,7 +49,8 @@ const DownloadButton = ({
       if (typeof onClick === "function") onClick("done");
     } catch (error) {
       console.error("Error downloading the file:", error);
-      if (typeof onClick === "function") onClick("error");
+      alert("The file address is invalid");
+      if (typeof onClick === "function") onClick("done");
     }
   };
 
