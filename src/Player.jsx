@@ -299,12 +299,12 @@ const Player = () => {
                 size={200}
                 bgColor={theme === "dark" ? "#1a202c" : "#fff"}
                 fgColor={theme === "dark" ? "#ffffff" : "#000000"}
-                level={"H"}
+                level={"L"}
                 includeMargin={true}
                 imageSettings={{
                   src: logoBase64,
-                  width: 80,
-                  height: 80,
+                  width: 50,
+                  height: 50,
                 }}
               />
             </div>
