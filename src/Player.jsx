@@ -2,7 +2,6 @@ import { useState, useEffect, useContext, useRef } from "react";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import axios from "axios";
-import { QRCode } from "react-qrcode-logo";
 import { ThemeContext } from "./context/ThemeContext";
 import handleShare from "./script/handleshare";
 import Favicon from "./components/Favicon";
@@ -14,6 +13,7 @@ import { TrackContext } from "./context/TrackContext";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import useDocumentMeta from "./hooks/useDocumentMeta";
 import ErrorElement from "./Error";
+import { QRCodeCanvas } from "qrcode.react";
 
 const proxy = "https://corsproxy.io/?";
 
@@ -47,7 +47,7 @@ const Player = () => {
         link.href = URL.createObjectURL(blob);
         link.download = `${trackInfo?.trackName || "Unknown Track"}-${
           trackInfo.artistName || "Unknown Artist"
-        } [${location.host}].png`;
+        } [${window.location.host}].png`;
         link.click();
       }, "image/png");
     }
@@ -114,13 +114,36 @@ const Player = () => {
     img.onload = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
-      canvas.height = img.height;
-      canvas.width = img.width;
-      ctx.drawImage(img, 0, 0);
+      const size = Math.min(img.width, img.height); // Ensuring the image is a square
+      const borderSize = 15; // Size of the border
+      canvas.width = size + borderSize * 2;
+      canvas.height = size + borderSize * 2;
+
+      ctx.beginPath();
+      ctx.arc(
+        canvas.width / 2,
+        canvas.height / 2,
+        (size + borderSize) / 2,
+        0,
+        Math.PI * 2
+      );
+      ctx.closePath();
+      ctx.fillStyle = theme !== "dark" ? "#1a202c" : "#fff";
+      ctx.fill();
+
+      // Draw the image within a circular clipping path
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2, size / 2, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+
+      // Drawing the image
+      ctx.drawImage(img, borderSize, borderSize, size, size);
+
       const dataURL = canvas.toDataURL("image/png");
       callback(dataURL);
     };
-    img.src = proxy + url;
+    img.src = url;
   };
 
   const [logoBase64, setLogoBase64] = useState(null);
@@ -185,9 +208,9 @@ const Player = () => {
 
             {trackInfo.artworkUrl100 && (
               <img
-                src={proxy + trackInfo.artworkUrl100.replaceAll("100", "200")}
+                src={logoBase64}
                 alt="Artwork"
-                className={`rounded-full !size-[10rem] border-[.3rem] border-gray-900 dark:border-white transition-transform ease-in-out ${
+                className={`rounded-full !size-[15rem] border-gray-900 dark:border-white transition-transform ease-in-out ${
                   imageZoom ? "zoom" : play && "animate-bounce"
                 }`}
                 onMouseEnter={() => setImageZoom(true)}
@@ -215,7 +238,7 @@ const Player = () => {
                 onClick={handleDownload}
                 filename={`${trackInfo?.trackName || "Unknown Track"}-${
                   trackInfo.artistName || "Unknown Artist"
-                } [${location.host}].mp3`}
+                } [${window.location.host}].mp3`}
               >
                 {downloading ? (
                   <TbLoader className="mr-2 animate-spin-slow" />
@@ -270,20 +293,19 @@ const Player = () => {
           </div>
 
           <div ref={qrRef} className="flex max-md:flex-col max-md:space-y-4">
-            <div className="bg-gray-100 dark:bg-[#1a202c] rounded-md flex max-md:justify-center">
-              <QRCode
+            <div className="rounded-md flex max-md:justify-center">
+              <QRCodeCanvas
                 value={window.location.href}
-                logoImage={logoBase64}
-                logoWidth={75}
-                logoHeight={75}
-                logoOpacity={1}
-                removeQrCodeBehindLogo={true}
-                qrStyle="dots"
-                eyeRadius={10}
                 size={200}
-                title="QR Code"
-                bgColor="transparent"
+                bgColor={theme === "dark" ? "#1a202c" : "#fff"}
                 fgColor={theme === "dark" ? "#ffffff" : "#000000"}
+                level={"H"}
+                includeMargin={true}
+                imageSettings={{
+                  src: logoBase64,
+                  width: 80,
+                  height: 80,
+                }}
               />
             </div>
 
