@@ -7,23 +7,30 @@ import { ThemeContext } from "./context/ThemeContext";
 import handleShare from "./script/handleshare";
 import Favicon from "./components/Faviction";
 import replace from "./script/replace";
-import { FaDownload } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaDownload } from "react-icons/fa";
 import DownloadButton from "./components/DownloadBtn";
 import { TbLoader } from "react-icons/tb";
 import { TrackContext } from "./context/TrackContext";
-import { Link } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 
 const proxy = "https://corsproxy.io/?";
 
 const Player = () => {
   const { setInfo, downloading, handleDownload } = useContext(TrackContext);
+  const [serachParams, setSeachParams] = useSearchParams();
+  const location = useLocation();
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const src = proxy + encodeURI(urlParams.get("src"));
-  const name = urlParams.get("name");
-  const text = urlParams.get("text");
-  const from = urlParams.get("from");
-  const site = urlParams.get("site");
+  const src = proxy + encodeURI(serachParams.get("src"));
+  const name = useParams().name.replaceAll("+", " ");
+  const text = serachParams.get("text");
+  const from = serachParams.get("from");
+  const site = serachParams.get("site");
+  const index = +serachParams.get("page") > 1 ? +serachParams.get("page") : 1;
 
   const [error, setError] = useState(false);
   const [play, setPlay] = useState(false);
@@ -49,22 +56,39 @@ const Player = () => {
   };
 
   useEffect(() => {
+    mount.current = false;
+    setError(false);
+
+    setTrackInfo({});
+    setInfo({});
+  }, [location]);
+
+  useEffect(() => {
     if (name) {
       axios
         .get(
-          `https://corsproxy.io/?https://itunes.apple.com/search?term=${name}&limit=1`,
+          `https://corsproxy.io/?https://itunes.apple.com/search?term=${encodeURIComponent(
+            name
+          )}&limit=${index}`,
           {
             timeout: 10000,
           }
         )
         .then((response) => {
-          if (response.data.results.length > 0) {
-            mount.current = true;
+          mount.current = true;
 
-            setTrackInfo(response.data.results[0]);
-            setInfo({ ...response.data.results[0], text, src });
+          if (
+            response.data.results.length > 0 &&
+            response.data.results[index - 1]
+          ) {
+            if (response.data.results.length < index) setError(true);
+
+            setTrackInfo(response.data.results[index - 1]);
+            setInfo({ ...response.data.results[index - 1], text, src });
 
             if (!response.data.results[0].trackName) setError(true);
+          } else {
+            setError(true);
           }
         })
         .catch(() => {
@@ -93,33 +117,86 @@ const Player = () => {
   const [logoBase64, setLogoBase64] = useState(null);
 
   useEffect(() => {
-    if (trackInfo.artworkUrl100) {
+    if (trackInfo?.artworkUrl100 && !error) {
       getBase64Image(
         trackInfo.artworkUrl100.replaceAll("100", "200"),
         setLogoBase64
       );
     }
-  }, [trackInfo.artworkUrl100]);
+  }, [trackInfo?.artworkUrl100]);
 
   return (
     <section
       className={`p-4 max-w-xl mx-auto bg-slate-50 dark:bg-gray-900 rounded-xl shadow-md space-y-4 ${theme}`}
     >
       {!mount.current ? (
-        <TbLoader size={100} className="animate-spin-slow" />
+        <TbLoader
+          size={100}
+          className="animate-spin-slow text-gray-900 dark:text-white"
+        />
       ) : error ? (
-        <div className="flex justify-center flex-wrap *:w-full *:p-4 *:text-center">
-          <span className="text-4xl">Error 404 </span>
+        <div className="flex justify-center flex-wrap *:w-full *:p-4 *:text-center space-y-4">
+          <span className="text-4xl text-gray-900 dark:text-white">
+            Error 404{" "}
+          </span>
           <Link
+            title="Home"
             to="/"
             className="bg-blue-500 hover:bg-blue-600 text-2xl rounded-lg"
           >
             Home
           </Link>
+          <button
+            title="Refresh"
+            onClick={() => location.reload()}
+            className="bg-yellow-500 hover:bg-yellow-600 text-2xl rounded-lg"
+          >
+            Refresh
+          </button>
+          {index && (
+            <button
+              title="Previous page"
+              onClick={() => {
+                serachParams.set("page", index - 1);
+                setSeachParams(serachParams);
+              }}
+              className="bg-red-500 hover:bg-red-600 text-2xl rounded-lg"
+            >
+              Previous page
+            </button>
+          )}
         </div>
       ) : (
         <>
-          <div className="space-y-2 py-2 flex justify-center flex-wrap *:w-full text-center">
+          <div className="space-y-2 py-2 flex justify-center flex-wrap *:w-full text-center relative">
+            <nav
+              className={`w-full absolute top-0 h-10 flex justify-${
+                index === 1 ? "end" : "between"
+              }`}
+            >
+              {index !== 1 && (
+                <button
+                  title={`Temp number ${index - 1}`}
+                  onClick={() => {
+                    serachParams.set("page", index - 1);
+                    setSeachParams(serachParams);
+                  }}
+                >
+                  <FaArrowLeft />
+                </button>
+              )}
+
+              <button
+                title={`Temp number ${index + 1}`}
+                onClick={() => {
+                  serachParams.set("page", index + 1);
+                  setSeachParams(serachParams);
+                }}
+              >
+                <FaArrowRight />
+              </button>
+            </nav>
+
             {trackInfo.artworkUrl100 && (
               <img
                 src={proxy + trackInfo.artworkUrl100.replaceAll("100", "200")}

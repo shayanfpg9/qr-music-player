@@ -1,5 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap");
-
+@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Vazirmatn:wght@100..900&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -49,9 +48,13 @@ form label {
 
 form input,
 form textarea {
-  @apply mt-1 p-2 border rounded-md md:min-h-14 md:text-lg w-full text-gray-900;
+  @apply mt-1 p-2 border rounded-md md:min-h-14 md:text-lg w-full text-gray-900 font-archivo;
 }
 
 form button {
   @apply text-white px-4 py-4 rounded-md text-lg;
+}
+
+nav button svg {
+  @apply size-10 text-gray-500;
 }

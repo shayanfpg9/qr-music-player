@@ -1,5 +1,4 @@
 import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import { ThemeContext } from "./context/ThemeContext";
 
 const Form = () => {
@@ -9,21 +8,6 @@ const Form = () => {
   const [title, setTitle] = useState("");
   const [fileUrl, setFileUrl] = useState("");
   const { theme } = useContext(ThemeContext);
-  const navigate = useNavigate();
-
-  const handleSubmit = () => {
-    if (name && fileUrl) {
-      const queryParams = new URLSearchParams({
-        name,
-        text,
-        site: fromSite,
-        from: title,
-        src: fileUrl,
-      });
-
-      navigate(`/player/?${queryParams.toString()}`);
-    }
-  };
 
   return (
     <div
@@ -31,7 +15,7 @@ const Form = () => {
     >
       <h1 className="text-3xl font-bold mb-4">Submit Your Information</h1>
 
-      <form className="space-y-4">
+      <form method="get" action="/player" className="space-y-4">
         <div>
           <label>Name</label>
           <input
@@ -52,7 +36,6 @@ const Form = () => {
             onChange={(e) => setText(e.target.value)}
             rows="4"
             placeholder="Enter text description"
-            required
           />
         </div>
 
@@ -68,7 +51,6 @@ const Form = () => {
             value={fromSite}
             onChange={(e) => setFromSite(e.target.value)}
             placeholder="Enter reference Site URL"
-            required
           />
         </div>
 
@@ -82,7 +64,6 @@ const Form = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter reference site title"
-            required
           />
         </div>
 

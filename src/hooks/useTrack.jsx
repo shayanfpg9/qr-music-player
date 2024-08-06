@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const useTrack = () => {
   const [trackInfo, setInfo] = useState({});
   const [downloading, setDownloading] = useState(false);
-
-  return {
+  const location = useLocation();
+  const response = {
     trackInfo,
     downloading,
     setInfo: (data) => {
@@ -16,6 +17,13 @@ const useTrack = () => {
       if (status === "done") setDownloading(false);
     },
   };
+
+  useEffect(() => {
+    response.setInfo({});
+    response.handleDownload("done")
+  }, [location]);
+
+  return response;
 };
 
 export default useTrack;

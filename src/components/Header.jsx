@@ -1,7 +1,7 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { BsFillShareFill } from "react-icons/bs";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import DownloadButton from "./DownloadBtn";
 import { TbLoader } from "react-icons/tb";
 import { FaDownload } from "react-icons/fa";
@@ -12,6 +12,12 @@ import { IoHome } from "react-icons/io5";
 const Header = () => {
   const { theme, icon: ThemeIcon, change: setTheme } = useContext(ThemeContext);
   const { trackInfo, handleDownload, downloading } = useContext(TrackContext);
+  const location = useLocation();
+  const [player, setPlayer] = useState(location.pathname.match("player"));
+
+  useEffect(() => {
+    setPlayer(location.pathname.match("player"));
+  }, [location]);
 
   return (
     <header className="p-4 bg-gray-800 text-white flex justify-between items-center font-bold text-xl">
@@ -24,17 +30,19 @@ const Header = () => {
           {ThemeIcon}
         </button>
 
-        <Link title="Home" className="inline-block" to="/">
-          <IoHome />
-        </Link>
+        {player && (
+          <Link title="Home" className="inline-block" to="/">
+            <IoHome />
+          </Link>
+        )}
 
-        {trackInfo && (
+        {player && (
           <button onClick={handleShare} title="Share">
             <BsFillShareFill />
           </button>
         )}
 
-        {trackInfo && (
+        {player && (
           <DownloadButton
             className="mx-2 inline-block"
             title="Download music"
