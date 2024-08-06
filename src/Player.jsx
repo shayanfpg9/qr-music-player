@@ -5,7 +5,7 @@ import axios from "axios";
 import { QRCode } from "react-qrcode-logo";
 import { ThemeContext } from "./context/ThemeContext";
 import handleShare from "./script/handleshare";
-import Favicon from "./components/Faviction";
+import Favicon from "./components/Favicon";
 import replace from "./script/replace";
 import { FaArrowLeft, FaArrowRight, FaDownload } from "react-icons/fa";
 import DownloadButton from "./components/DownloadBtn";
@@ -152,7 +152,7 @@ const Player = () => {
                 serachParams.set("page", index - 1);
                 setSeachParams(serachParams);
               }}
-              className="bg-red-500 hover:bg-red-600 text-2xl rounded-lg"
+              className="bg-red-500 hover:bg-red-600"
             >
               Previous page
             </button>
