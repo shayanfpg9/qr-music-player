@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 const useDocumentMeta = () => {
   const change = ({ title, description, faviconUrl }) => {
     if (title) {

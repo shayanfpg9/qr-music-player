@@ -107,7 +107,7 @@ const Player = () => {
           setError(true);
         });
     }
-  }, [name, src, text, index]);
+  }, [name, src, text, index]); // eslint-disable-line
 
   // Function to fetch image as base64
   const getBase64Image = (url, callback) => {
