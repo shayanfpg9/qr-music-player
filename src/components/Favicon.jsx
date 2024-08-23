@@ -13,14 +13,17 @@ import axios from "axios";
  */
 const Favicon = ({ domain, size = 64, className }) => {
   const [faviconUrl, setFaviconUrl] = useState("");
+  const proxy = "https://corsproxy.io/?";
 
   useEffect(() => {
     const fetchFavicon = async () => {
       try {
         // Use a public CORS proxy
-        const proxyUrl = "https://corsproxy.io/?";
         const response = await axios.get(
-          `${proxyUrl}https://favicone.com/${new URL(domain).host}?s=${size}`,
+          proxy +
+            encodeURIComponent(
+              `https://favicone.com/${new URL(domain).host}?s=${size}`
+            ),
           {
             responseType: "blob",
           }
