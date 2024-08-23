@@ -1,6 +1,6 @@
 const handleShare = (copy = false) => {
   const trackInfo = window.track;
-  if (navigator.share && !copy) {
+  if (navigator.share && copy !== true) {
     navigator
       .share({
         title:
