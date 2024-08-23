@@ -6,14 +6,13 @@ import { ThemeContext } from "./context/ThemeContext";
 import handleShare from "./script/handleshare";
 import Favicon from "./components/Favicon";
 import replace from "./script/replace";
-import { FaArrowLeft, FaArrowRight, FaDownload } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaCheck, FaDownload } from "react-icons/fa";
 import DownloadButton from "./components/DownloadBtn";
 import { TbLoader } from "react-icons/tb";
 import { TrackContext } from "./context/TrackContext";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import useDocumentMeta from "./hooks/useDocumentMeta";
 import ErrorElement from "./Error";
-import { QRCodeCanvas } from "qrcode.react";
 
 const proxy = "https://corsproxy.io/?";
 
@@ -23,7 +22,7 @@ const Player = () => {
   const location = useLocation();
   const changeMeta = useDocumentMeta();
 
-  const src = proxy + encodeURI(serachParams.get("src"));
+  const [src, setSrc] = useState("");
   const name = useParams().name.replaceAll("+", " ");
   const text = serachParams.get("text");
   const from = serachParams.get("from");
@@ -36,22 +35,22 @@ const Player = () => {
   const [imageZoom, setImageZoom] = useState(false);
   const [volume, setVolume] = useState(1);
   const { theme } = useContext(ThemeContext);
-  const qrRef = useRef(null);
   const mount = useRef(false);
+  const [copy, setCopy] = useState(false);
 
-  const downloadQRCode = () => {
-    const canvas = qrRef.current.querySelector("canvas");
-    if (canvas) {
-      canvas.toBlob((blob) => {
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `${trackInfo?.trackName || "Unknown Track"}-${
-          trackInfo.artistName || "Unknown Artist"
-        } [${window.location.host}].png`;
-        link.click();
-      }, "image/png");
-    }
-  };
+  // const downloadQRCode = () => {
+  //   const canvas = qrRef.current.querySelector("canvas");
+  //   if (canvas) {
+  //     canvas.toBlob((blob) => {
+  //       const link = document.createElement("a");
+  //       link.href = URL.createObjectURL(blob);
+  //       link.download = `${trackInfo?.trackName || "Unknown Track"}-${
+  //         trackInfo.artistName || "Unknown Artist"
+  //       } [${window.location.host}].png`;
+  //       link.click();
+  //     }, "image/png");
+  //   }
+  // };
 
   useEffect(() => {
     mount.current = false;
@@ -59,15 +58,40 @@ const Player = () => {
 
     setTrackInfo({});
     setInfo({});
+
+    setSrc("");
+
+    axios
+      .get(proxy + encodeURIComponent(serachParams.get("src")), {
+        responseType: "blob",
+      })
+      .then(({ data }) => {
+        const blob = new Blob([data], { type: "audio/mp3" });
+        const BlobUrl = URL.createObjectURL(blob);
+
+        // let binary = "";
+        // const bytes = new Uint8Array(buffer);
+        // const len = bytes.byteLength;
+
+        // for (let i = 0; i < len; i++) {
+        //   binary += String.fromCharCode(bytes[i]);
+        // }
+
+        // const base64String = "data:audio/mpeg;base64," + window.btoa(binary);
+
+        setSrc(BlobUrl);
+      })
+      .catch((e) => console.error(e));
   }, [location]); // eslint-disable-line
 
   useEffect(() => {
     if (name) {
       axios
         .get(
-          `https://corsproxy.io/?https://itunes.apple.com/search?term=${encodeURIComponent(
-            name
-          )}&limit=${index}`,
+          proxy +
+            encodeURIComponent(
+              `https://itunes.apple.com/search?term=${name}&limit=${index}`
+            ),
           {
             timeout: 5000,
           }
@@ -100,7 +124,13 @@ const Player = () => {
             setError(true);
           }
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(
+            proxy +
+              encodeURIComponent(
+                `https://itunes.apple.com/search?term=${name}&limit=${index}`
+              )
+          );
           mount.current = true;
           setError(true);
         });
@@ -108,60 +138,60 @@ const Player = () => {
   }, [name, src, text, index]); // eslint-disable-line
 
   // Function to fetch image as base64
-  const getBase64Image = (url, callback) => {
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      const size = Math.min(img.width, img.height); // Ensuring the image is a square
-      const borderSize = 15; // Size of the border
-      canvas.width = size + borderSize * 2;
-      canvas.height = size + borderSize * 2;
+  // const getBase64Image = (url, callback) => {
+  //   const img = new Image();
+  //   img.crossOrigin = "Anonymous";
+  //   img.onload = () => {
+  //     const canvas = document.createElement("canvas");
+  //     const ctx = canvas.getContext("2d");
+  //     const size = Math.min(img.width, img.height); // Ensuring the image is a square
+  //     const borderSize = 15; // Size of the border
+  //     canvas.width = size + borderSize * 2;
+  //     canvas.height = size + borderSize * 2;
 
-      ctx.beginPath();
-      ctx.arc(
-        canvas.width / 2,
-        canvas.height / 2,
-        (size + borderSize) / 2,
-        0,
-        Math.PI * 2
-      );
-      ctx.closePath();
-      ctx.fillStyle = theme !== "dark" ? "#1a202c" : "#fff";
-      ctx.fill();
+  //     ctx.beginPath();
+  //     ctx.arc(
+  //       canvas.width / 2,
+  //       canvas.height / 2,
+  //       (size + borderSize) / 2,
+  //       0,
+  //       Math.PI * 2
+  //     );
+  //     ctx.closePath();
+  //     ctx.fillStyle = theme !== "dark" ? "#1a202c" : "#fff";
+  //     ctx.fill();
 
-      // Draw the image within a circular clipping path
-      ctx.beginPath();
-      ctx.arc(canvas.width / 2, canvas.height / 2, size / 2, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.clip();
+  //     // Draw the image within a circular clipping path
+  //     ctx.beginPath();
+  //     ctx.arc(canvas.width / 2, canvas.height / 2, size / 2, 0, Math.PI * 2);
+  //     ctx.closePath();
+  //     ctx.clip();
 
-      // Drawing the image
-      ctx.drawImage(img, borderSize, borderSize, size, size);
+  //     // Drawing the image
+  //     ctx.drawImage(img, borderSize, borderSize, size, size);
 
-      const dataURL = canvas.toDataURL("image/png");
-      callback(dataURL);
-    };
-    img.src = url;
-  };
+  //     const dataURL = canvas.toDataURL("image/png");
+  //     callback(dataURL);
+  //   };
+  //   img.src = proxy + encodeURI(url);
+  // };
 
-  const [logoBase64, setLogoBase64] = useState(null);
+  // const [logoBase64, setLogoBase64] = useState(null);
 
-  useEffect(() => {
-    if (trackInfo?.artworkUrl100 && !error) {
-      getBase64Image(
-        trackInfo.artworkUrl100.replaceAll("100", "200"),
-        setLogoBase64
-      );
-    }
-  }, [trackInfo?.artworkUrl100, error]);
+  // useEffect(() => {
+  //   if (trackInfo?.artworkUrl100 && !error) {
+  //     getBase64Image(
+  //       trackInfo.artworkUrl100.replaceAll("100", "200"),
+  //       setLogoBase64
+  //     );
+  //   }
+  // }, [trackInfo?.artworkUrl100, error]);
 
   return (
     <section
       className={`p-4 max-w-xl mx-auto bg-slate-50 dark:bg-gray-900 rounded-xl shadow-md space-y-4 ${theme}`}
     >
-      {!mount.current ? (
+      {(!mount.current || !src.startsWith("blob:")) && !error ? (
         <TbLoader
           size={100}
           className="animate-spin-slow text-gray-900 dark:text-white"
@@ -183,7 +213,7 @@ const Player = () => {
         </ErrorElement>
       ) : (
         <>
-          <div className="space-y-2 py-2 flex justify-center flex-wrap *:w-full text-center relative">
+          <div className="space-y-2 py-2 flex justify-center flex-wrap *:w-full text-center relative ">
             <nav className={`w-full absolute top-0 h-10 flex justify-between`}>
               <button
                 title={`Temp number ${index - 1}`}
@@ -208,9 +238,9 @@ const Player = () => {
 
             {trackInfo.artworkUrl100 && (
               <img
-                src={logoBase64}
+                src={proxy + encodeURIComponent(trackInfo.artworkUrl100)}
                 alt="Artwork"
-                className={`rounded-full !size-[15rem] border-gray-900 dark:border-white transition-transform ease-in-out ${
+                className={`rounded-full !size-[10rem] transition-transform ease-in-out ${
                   imageZoom ? "zoom" : play && "animate-bounce"
                 }`}
                 onMouseEnter={() => setImageZoom(true)}
@@ -220,7 +250,7 @@ const Player = () => {
             )}
 
             <h1
-              className="text-3xl font-bold pt-2 text-gray-900 dark:text-white"
+              className="text-3xl font-bold pt-2 text-gray-900 dark:text-white capitalize"
               title="Track Name"
             >
               {trackInfo.trackName || "Unknown Track"}
@@ -292,14 +322,14 @@ const Player = () => {
             )}
           </div>
 
-          <div ref={qrRef} className="flex max-md:flex-col max-md:space-y-4">
-            <div className="rounded-md flex max-md:justify-center">
+          {/* <div ref={qrRef} className="flex max-md:flex-col max-md:space-y-4"> */}
+          {/* <div className="rounded-md flex max-md:justify-center">
               <QRCodeCanvas
-                value={window.location.href}
+                value={window.shortUrl}
                 size={200}
                 bgColor={theme === "dark" ? "#1a202c" : "#fff"}
                 fgColor={theme === "dark" ? "#ffffff" : "#000000"}
-                level={"L"}
+                level={"H"}
                 includeMargin={true}
                 imageSettings={{
                   src: logoBase64,
@@ -307,41 +337,56 @@ const Player = () => {
                   height: 50,
                 }}
               />
-            </div>
+            </div> */}
 
-            <div className="flex flex-wrap *:w-full space-y-4 md:px-2 *:text-xl *:text-white *:px-4 *:py-2 *:rounded">
-              <DownloadButton
-                className={
-                  "bg-red-500 hover:bg-red-600 rounded flex items-center justify-center " +
-                  (downloading && "animate-pulse")
-                }
-                title="Download music"
-                onClick={handleDownload}
-                src={src}
-                filename={`${trackInfo?.trackName || "Unknown Track"}-${
-                  trackInfo.artistName || "Unknown Artist"
-                } [${location.host}].mp3`}
-              >
-                Download music
-              </DownloadButton>
+          <div className="flex flex-wrap *:w-full space-y-4 md:px-2 *:text-xl *:text-white *:rounded *:py-4">
+            <DownloadButton
+              className={
+                "bg-red-500 hover:bg-red-600 rounded flex items-center justify-center " +
+                (downloading && "animate-pulse")
+              }
+              title="Download music"
+              onClick={handleDownload}
+              src={src}
+              filename={`${trackInfo?.trackName || "Unknown Track"}-${
+                trackInfo.artistName || "Unknown Artist"
+              } [${window.location.host}].mp3`}
+            >
+              Download music
+            </DownloadButton>
 
-              <button
-                onClick={downloadQRCode}
-                className="bg-green-500 hover:bg-green-600"
-                title="Download QR Code"
-              >
-                Download QR Code
-              </button>
+            {/* <button
+                  onClick={downloadQRCode}
+                  className="bg-green-500 hover:bg-green-600"
+                  title="Download QR Code"
+                >
+                  Download QR Code
+                </button> */}
 
-              <button
-                onClick={handleShare}
-                className="bg-blue-500 hover:bg-blue-600"
-                title="Share this page"
-              >
-                Share this page
-              </button>
-            </div>
+            <button
+              onClick={handleShare}
+              className="bg-blue-500 hover:bg-blue-600"
+              title="Share this page"
+            >
+              Share this page
+            </button>
+
+            <button
+              onClick={() => {
+                handleShare(true);
+                setCopy(true);
+
+                setTimeout(() => {
+                  setCopy(false);
+                }, 1500);
+              }}
+              className="bg-yellow-500 hover:bg-yellow-600 flex justify-center items-center"
+              title="Share this page"
+            >
+              {!copy ? "Copy Link" : <FaCheck className="size-8" />}
+            </button>
           </div>
+          {/* </div> */}
         </>
       )}
     </section>

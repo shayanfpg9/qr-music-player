@@ -1,5 +1,7 @@
 import axios from "axios";
 import PropTypes from "prop-types";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 /**
  * A button that triggers a file download when clicked.
@@ -21,43 +23,45 @@ const DownloadButton = ({
   className,
   ...props
 }) => {
-  const handleDownload = async () => {
-    try {
-      if (typeof onClick === "function") onClick("start");
+  // const handleDownload = async () => {
+  //   try {
+  //     // if (typeof onClick === "function") onClick("start");
 
-      const response = await axios.get(src, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+  //     // console.log(src);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+  //     // const response = await axios.get(src, {
+  //     //   headers: {
+  //     //     "Access-Control-Allow-Origin": "*",
+  //     //   },
+  //     // });
 
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
+  //     // if (!response.ok) {
+  //     //   throw new Error(`HTTP error! Status: ${response.status}`);
+  //     // }
 
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+  //     // const blob = await response.blob();
+  //     // const url = URL.createObjectURL(blob);
 
-      if (typeof onClick === "function") onClick("done");
-    } catch (error) {
-      console.error("Error downloading the file:", error);
-      alert("The file address is invalid");
-      if (typeof onClick === "function") onClick("done");
-    }
-  };
+  //     const link = document.createElement("a");
+  //     link.href = decodeURIComponent(src.replace(proxy, ""));
+  //     link.download = filename ?? true;
+  //     link.click();
+  //     // URL.revokeObjectURL(url);
+
+  //     if (typeof onClick === "function") onClick("done");
+  //   } catch (error) {
+  //     console.error("Error downloading the file:", error);
+  //     alert("The file address is invalid");
+  //     if (typeof onClick === "function") onClick("done");
+  //   }
+  // };
+
+
 
   return (
-    <button onClick={handleDownload} className={className} {...props}>
+    <a href={src} download={filename || true} className={className} {...props}>
       {children}
-    </button>
+    </a>
   );
 };
 

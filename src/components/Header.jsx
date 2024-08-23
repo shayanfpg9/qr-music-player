@@ -48,11 +48,9 @@ const Header = () => {
           </Link>
         )}
 
-        {player && validate() && (
-          <button onClick={handleShare} title="Share">
-            <BsFillShareFill />
-          </button>
-        )}
+        <button onClick={handleShare} title="Share">
+          <BsFillShareFill />
+        </button>
 
         {player && validate() && (
           <DownloadButton
@@ -62,7 +60,7 @@ const Header = () => {
             onClick={handleDownload}
             filename={`${trackInfo?.trackName || "Unknown Track"}-${
               trackInfo.artistName || "Unknown Artist"
-            } [${location.host}].mp3`}
+            } [${window.location.host}].mp3`}
           >
             {downloading ? (
               <TbLoader className="mr-2 animate-spin-slow" />
