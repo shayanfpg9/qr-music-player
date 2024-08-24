@@ -318,7 +318,7 @@ const Player = () => {
                     size={32}
                     className="inline-block mr-1"
                   />
-                  {from ? replace(from) : replace(site)}
+                  {from ? from : site}
                 </a>
               </p>
             )}
