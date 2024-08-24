@@ -3,6 +3,16 @@ import { ThemeContext } from "./context/ThemeContext";
 import useDocumentMeta from "./hooks/useDocumentMeta";
 import { useNavigate } from "react-router-dom";
 
+const urlRegex =
+  /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d{1,5})?(\/\S*)?$/;
+const isValidURL = (url) => {
+  try {
+    return urlRegex.test(url) && new URL(url);
+  } catch (error) {
+    return false;
+  }
+};
+
 const Form = () => {
   const [name, setName] = useState("");
   const [text, setText] = useState("");
@@ -10,6 +20,8 @@ const Form = () => {
   const [title, setTitle] = useState("");
   const [fileUrl, setFileUrl] = useState("");
   const [fileError, setFileError] = useState(false);
+  const [siteError, setSiteError] = useState(false);
+  const [nameError, setNameError] = useState(false);
   const { theme } = useContext(ThemeContext);
   const navigate = useNavigate();
   const changeMeta = useDocumentMeta();
@@ -22,20 +34,26 @@ const Form = () => {
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
+    setSiteError(false);
+    setFileError(false);
+    setNameError(false);
 
-    try {
-      if (name && new URL(fileUrl)) {
+    if (fromSite !== "" && !isValidURL(fromSite)) {
+      setSiteError(true);
+    } else {
+      if (name && isValidURL(fileUrl)) {
         const queryParams = new URLSearchParams({
-          text,
-          site: fromSite,
-          from: title,
-          src: encodeURI(fileUrl),
+          text: encodeURIComponent(text),
+          site: encodeURIComponent(fromSite),
+          from: encodeURIComponent(title),
+          src: encodeURIComponent(fileUrl),
         });
 
         navigate(`/player/${name}/?${queryParams.toString()}`);
+      } else {
+        if (!isValidURL(fileUrl)) setFileError(true);
+        if (!name) setNameError(true);
       }
-    } catch (e) {
-      setFileError(true);
     }
   };
 
@@ -49,12 +67,20 @@ const Form = () => {
 
       <form className="space-y-4">
         <div>
-          <label>Name</label>
+          <label>
+            Name{" "}
+            {nameError && (
+              <span className="text-sm animate-pulse text-red-500">
+                (Input must be filled)
+              </span>
+            )}
+          </label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter your name"
+            autoFocus
             required
           />
         </div>
@@ -75,19 +101,6 @@ const Form = () => {
 
         <div>
           <label>
-            Reference Site URL{" "}
-            <span className="text-sm text-blue-500">(optional)</span>
-          </label>
-          <input
-            type="text"
-            value={fromSite}
-            onChange={(e) => setFromSite(e.target.value)}
-            placeholder="Enter reference Site URL"
-          />
-        </div>
-
-        <div>
-          <label>
             Reference site title{" "}
             <span className="text-sm text-blue-500">(optional)</span>
           </label>
@@ -96,6 +109,25 @@ const Form = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter reference site title"
+          />
+        </div>
+
+        <div>
+          <label>
+            Reference Site URL{" "}
+            <span className="text-sm text-blue-500">(optional)</span>
+            {" "}
+            {siteError && (
+              <span className="text-sm animate-pulse text-red-500">
+                (Input must be a URL)
+              </span>
+            )}
+          </label>
+          <input
+            type="text"
+            value={fromSite}
+            onChange={(e) => setFromSite(e.target.value)}
+            placeholder="Enter reference Site URL (with http(s))"
           />
         </div>
 
@@ -114,7 +146,7 @@ const Form = () => {
             type="text"
             value={fileUrl}
             onChange={(e) => setFileUrl(e.target.value)}
-            placeholder="Enter file URL"
+            placeholder="Enter file URL (with http(s))"
             required
           />
         </div>

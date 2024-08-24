@@ -24,9 +24,9 @@ const Player = () => {
 
   const [src, setSrc] = useState("");
   const name = useParams().name.replaceAll("+", " ");
-  const text = serachParams.get("text");
-  const from = serachParams.get("from");
-  const site = serachParams.get("site");
+  const text = decodeURIComponent(serachParams.get("text"));
+  const from = decodeURIComponent(serachParams.get("from"));
+  const site = decodeURIComponent(serachParams.get("site"));
   const index = +serachParams.get("page") > 1 ? +serachParams.get("page") : 1;
 
   const [error, setError] = useState(false);
@@ -55,14 +55,14 @@ const Player = () => {
   useEffect(() => {
     mount.current = false;
     setError(false);
-
+    setPlay(false);
     setTrackInfo({});
     setInfo({});
 
     setSrc("");
 
     axios
-      .get(proxy + encodeURIComponent(serachParams.get("src")), {
+      .get(proxy + serachParams.get("src"), {
         responseType: "blob",
       })
       .then(({ data }) => {
@@ -110,6 +110,7 @@ const Player = () => {
 
             setTrackInfo(track);
             setInfo({ ...track, text, src });
+            setPlay(false);
 
             changeMeta({
               title: `Music player | ${track.trackName} - ${track.artistName}`,
@@ -118,7 +119,7 @@ const Player = () => {
               } in QR Music player. for "${text.replaceAll("\\n", " ")}" from ${
                 from || "Anonymous"
               }`,
-              faviconUrl: track.artworkUrl60,
+              faviconUrl: proxy + track.artworkUrl60,
             });
           } else {
             setError(true);
@@ -281,6 +282,7 @@ const Player = () => {
 
           <AudioPlayer
             src={src}
+            autoPlay={false}
             onPlaying={() => setPlay(true)}
             onPause={() => setPlay(false)}
             volume={volume}
@@ -316,7 +318,7 @@ const Player = () => {
                     size={32}
                     className="inline-block mr-1"
                   />
-                  {replace(from) ?? replace(site)}
+                  {from ? replace(from) : replace(site)}
                 </a>
               </p>
             )}
