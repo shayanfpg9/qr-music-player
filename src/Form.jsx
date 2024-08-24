@@ -29,7 +29,7 @@ const Form = () => {
           text,
           site: fromSite,
           from: title,
-          src: encodeURIComponents(fileUrl),
+          src: encodeURI(fileUrl),
         });
 
         navigate(`/player/${name}/?${queryParams.toString()}`);
