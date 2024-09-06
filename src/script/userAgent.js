@@ -53,22 +53,34 @@ const getUserAgentInfo = () => {
 
   if (userAgent.includes("Windows NT")) {
     osInfo.name = "Windows";
-    const version = userAgent.match(/Windows NT (\d+\.\d+)/)[1];
-    osInfo.version = version === "10.0" ? "10" : version;
+    const versionMatch = userAgent.match(/Windows NT (\d+\.\d+)/);
+    if (versionMatch) {
+      const version = versionMatch[1];
+      osInfo.version = version === "10.0" ? "10" : version;
+    }
   } else if (userAgent.includes("Mac OS X")) {
     osInfo.name = "Mac OS";
-    osInfo.version = userAgent.match(/Mac OS X (\d+_\d+)/)[1].replace("_", ".");
+    const versionMatch = userAgent.match(/Mac OS X (\d+_\d+)/);
+    if (versionMatch) {
+      osInfo.version = versionMatch[1].replace("_", ".");
+    }
   } else if (userAgent.includes("Android")) {
     osInfo.name = "Android";
-    osInfo.version = userAgent.match(/Android (\d+\.\d+)/)[1];
+    const versionMatch = userAgent.match(/Android (\d+(\.\d+)?)/);
+    if (versionMatch) {
+      osInfo.version = versionMatch[1];
+    }
   } else if (userAgent.includes("iPhone") || userAgent.includes("iPad")) {
     osInfo.name = "iOS";
-    osInfo.version = userAgent.match(/OS (\d+_\d+)/)[1].replace("_", ".");
+    const versionMatch = userAgent.match(/OS (\d+_\d+)/);
+    if (versionMatch) {
+      osInfo.version = versionMatch[1].replace("_", ".");
+    }
   } else if (userAgent.includes("Linux")) {
     osInfo.name = "Linux";
     osInfo.version = "";
   }
-
+  
   return {
     browser: browserInfo,
     os: osInfo,
