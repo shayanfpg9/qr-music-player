@@ -18,16 +18,16 @@ const proxy = "https://corsproxy.io/?";
 
 const Player = () => {
   const { setInfo, downloading, handleDownload } = useContext(TrackContext);
-  const [serachParams, setSeachParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const changeMeta = useDocumentMeta();
 
   const [src, setSrc] = useState("");
   const name = useParams().name.replaceAll("+", " ");
-  const text = decodeURIComponent(serachParams.get("text"));
-  const from = decodeURIComponent(serachParams.get("from"));
-  const site = decodeURIComponent(serachParams.get("site"));
-  const index = +serachParams.get("page") > 1 ? +serachParams.get("page") : 1;
+  const text = decodeURIComponent(searchParams.get("text"));
+  const from = decodeURIComponent(searchParams.get("from"));
+  const site = decodeURIComponent(searchParams.get("site"));
+  const index = +searchParams.get("page") > 1 ? +searchParams.get("page") : 1;
 
   const [error, setError] = useState(false);
   const [play, setPlay] = useState(false);
@@ -62,7 +62,7 @@ const Player = () => {
     setSrc("");
 
     axios
-      .get(proxy + serachParams.get("src"), {
+      .get(proxy + searchParams.get("src"), {
         responseType: "blob",
       })
       .then(({ data }) => {
@@ -199,12 +199,12 @@ const Player = () => {
         />
       ) : error ? (
         <ErrorElement>
-          {serachParams.get("page") && (
+          {searchParams.get("page") && (
             <button
               title="Previous page"
               onClick={() => {
-                serachParams.set("page", index - 1);
-                setSeachParams(serachParams);
+                searchParams.set("page", index - 1);
+                setSearchParams(searchParams);
               }}
               className="bg-red-500 hover:bg-red-600"
             >
@@ -215,12 +215,12 @@ const Player = () => {
       ) : (
         <>
           <div className="space-y-2 py-2 flex justify-center flex-wrap *:w-full text-center relative ">
-            <nav className={`w-full absolute top-0 h-10 flex justify-between`}>
+            <nav className={`w-full absolute top-0 h-10 *:*:max-md:size-8 flex justify-between`}>
               <button
                 title={`Temp number ${index - 1}`}
                 onClick={() => {
-                  index !== 1 && serachParams.set("page", index - 1);
-                  index !== 1 && setSeachParams(serachParams);
+                  index !== 1 && searchParams.set("page", index - 1);
+                  index !== 1 && setSearchParams(searchParams);
                 }}
               >
                 {index !== 1 && <FaArrowLeft />}
@@ -229,8 +229,8 @@ const Player = () => {
               <button
                 title={`Temp number ${index + 1}`}
                 onClick={() => {
-                  serachParams.set("page", index + 1);
-                  setSeachParams(serachParams);
+                  searchParams.set("page", index + 1);
+                  setSearchParams(searchParams);
                 }}
               >
                 <FaArrowRight />
@@ -241,8 +241,10 @@ const Player = () => {
               <img
                 src={proxy + encodeURIComponent(trackInfo.artworkUrl100)}
                 alt="Artwork"
-                className={`rounded-full !size-[10rem] transition-transform ease-in-out ${
-                  imageZoom ? "zoom" : play && "animate-bounce"
+                className={`rounded-full !size-[10rem] transition-transform ease-in-out border-4 border-gray-900 dark:border-gray-100 ${
+                  imageZoom
+                    ? "zoom"
+                    : play && "md:animate-bounce max-md:animate-spin-slow"
                 }`}
                 onMouseEnter={() => setImageZoom(true)}
                 onMouseLeave={() => setImageZoom(false)}
